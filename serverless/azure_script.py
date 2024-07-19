@@ -154,7 +154,7 @@ class CronScript:
         print("Filtered Trends: ", filter_trends) 
         #NEXT UP: FURTHER FILTER BY WHICH IS LIKELY TO CONTINUE DEVELOPING BASED ON BIWEEKLY TIME SERIES DATA AND PROPHET
 
-        for trend in filter_trends: #Remember filter_trends is tuple with 3 items
+        for trend in filter_trends:  
             self.generate(trend)
         
 
