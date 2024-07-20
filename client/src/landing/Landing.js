@@ -11,8 +11,7 @@ function Landing() {
       <Banner />
       <div className="d-flex flex-column bg-white py-4">
         <p className="text-center px-5">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          Browse through my AI-generated shirts -- orders fulfilled by Shopify.
         </p>
         <div className="d-flex justify-content-center">
           <Link to="/products" className="btn btn-primary" replace>
@@ -31,14 +30,14 @@ function Landing() {
       <div className="d-flex flex-column bg-white py-4">
         <h5 className="text-center mb-3">Follow us on</h5>
         <div className="d-flex justify-content-center">
-          <a href="!#" className="me-3">
-            <FontAwesomeIcon icon={["fab", "facebook"]} size="2x" />
+          <a href="https://www.linkedin.com/in/rishi-shah123/" className="me-3">
+            <FontAwesomeIcon icon={["fab", "linkedin"]} size="2x" />
           </a>
-          <a href="!#">
+          <a href="https://www.instagram.com/irishhash123/">
             <FontAwesomeIcon icon={["fab", "instagram"]} size="2x" />
           </a>
-          <a href="!#" className="ms-3">
-            <FontAwesomeIcon icon={["fab", "twitter"]} size="2x" />
+          <a href="https://github.com/rishis123" className="ms-3">
+            <FontAwesomeIcon icon={["fab", "github"]} size="2x" />
           </a>
         </div>
       </div>
