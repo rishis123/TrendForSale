@@ -69,16 +69,15 @@ class CronScript:
   
     def filter_trends(self, trend_list):
         """
-            Filters a list of trends by the following labels 'Sports', 'Entertainment', 'Travel', 'Pets', 'Disaster/Danger', 
-            'Miscellaneous', 'Politics', 'Health', 'Economy'. Only keeping trends in first 4 categories for merchandise.
-            Using Bart-large transformer model @ Facebook. 
+            Filters a list of trends by the following labels 'Politics', 'Entertainment', 'Sport', 'Religion', 'Travel', 'Food/Drink', 'Pets/Animals', 'Miscellaneous'. 
+            Keeping non-miscellaneous trends (further filtered through Naive Bayes Classifier). Using Bart-large transformer model @ Facebook. 
 
             #NEXT UP: https://soumilshah1995.blogspot.com/2021/04/simple-machine-learning-model-to.html. INCORPORATIVE NAIVE BAYES CLASSIFIER AND 
             ONLY SELECT TRENDS WITH CONSENSUS FILTERING
         """ 
         classifier = pipeline("zero-shot-classification",
                       model="facebook/bart-large-mnli")
-        candidate_labels = ['Disaster/Danger', 'Sports', 'Entertainment', 'Politics', 'Health', 'Economy', 'Travel', 'Pets', 'Miscellaneous']
+        candidate_labels = ['Politics', 'Entertainment', 'Sport', 'Religion', 'Travel', 'Food/Drink', 'Pets/Animals', 'Miscellaneous']
         filtered_trends = [] 
 
         for trend in trend_list:
@@ -87,7 +86,7 @@ class CronScript:
             max_score_index = result['scores'].index(max(result['scores']))
             max_confidence_label = result['labels'][max_score_index]
         
-            if max_confidence_label in ['Sports', 'Entertainment', 'Travel', 'Pets']:
+            if max_confidence_label != "Miscellaneous":
                 filtered_trends.append(trend)
 
         return filtered_trends #List of usable trends.
