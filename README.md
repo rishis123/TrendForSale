@@ -1,0 +1,2 @@
+I am building a website that sells "trendy" T-shirts, using Google Trends and various ML techniques to analyze the trends and select the optimal ones, as well as [To be Determined, currently Craiyon] API for image generation. 
+The full-stack application includes a React Frontend, Flask Backend, and Azure-hosted postgreSQL database, and the "trends" and shirts are gathered biweekly using an Azure scheduled-job.
