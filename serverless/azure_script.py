@@ -67,33 +67,36 @@ class CronScript:
         return trends_list
 
   
-    def filter_trends(self, trend_list):
+    def filter_trends(self, trend_list, bart_threshold=0.5):
         """
-            Filters a list of trends by the following labels 'Politics', 'Entertainment', 'Sport', 'Religion', 'Travel', 'Food/Drink', 'Pets/Animals', 'Miscellaneous'. 
-            Keeping non-miscellaneous trends (further filtered through Naive Bayes Classifier). Using Bart-large transformer model @ Facebook. 
+            Filters a list of trends by the following labels 'Politics', 'Entertainment', 'Sports', 'Miscellaneous'. 
+            Keeping non-miscellaneous trends (further filtered through Naive Bayes Classifier separately). Using Bart-large transformer model @ Facebook. 
 
             #NEXT UP: https://soumilshah1995.blogspot.com/2021/04/simple-machine-learning-model-to.html. INCORPORATIVE NAIVE BAYES CLASSIFIER AND 
             ONLY SELECT TRENDS WITH CONSENSUS FILTERING
+
+            default bart_threshold = 0.5 means that level of likelihood needed for addition to filtered list
         """ 
         classifier = pipeline("zero-shot-classification",
                       model="facebook/bart-large-mnli")
-        candidate_labels = ['Politics', 'Entertainment', 'Sport', 'Religion', 'Travel', 'Food/Drink', 'Pets/Animals', 'Miscellaneous']
+        candidate_labels = ['Politics', 'Entertainment', 'Sports', 'Miscellaneous']
         filtered_trends = [] 
 
         for trend in trend_list:
-            result = classifier(trend, candidate_labels) 
-            
-            max_score_index = result['scores'].index(max(result['scores']))
-            max_confidence_label = result['labels'][max_score_index]
-        
-            if max_confidence_label != "Miscellaneous":
+            bart_result = classifier(trend, candidate_labels) 
+            max_score_index = bart_result['scores'].index(max(bart_result['scores'])) #we pick the largest associated score from the bart model.
+            max_confidence_label = bart_result['labels'][max_score_index] #this is the name associated with the above index
+
+            if max_confidence_label != "Miscellaneous" and bart_result['scores'][max_score_index] >= bart_threshold: #we set default threshold to 0.5 above (prevent weak choices from being selected.)
                 filtered_trends.append(trend)
 
-        return filtered_trends #List of usable trends.
+        return filtered_trends
 
     def upload_to_blob(self, image_url: str, prompt: str):
         """
         Takes a generated image and saves it to blob in Azure container. Named for trend.
+
+        Return url of image in Blob storage afterwards
         """
 
         try:       
@@ -106,39 +109,57 @@ class CronScript:
 
                 #Then, upload from url (because craiyon defaults to url -- better than saving locally)
                 blob_client.upload_blob_from_url(image_url)
+                return blob_client.url
 
             else:
                 print(f"Failed to access image. Status code: {response.status_code}")
+                return None
         except requests.RequestException as e:
             #Ambiguous exception, aside from failure Status code.
             print(f"Error accessing image: {e}")
+            return None
 
 
     """
     Using Craiyon API wrapper to generate an image from a trend-name. Adding suffix "sketch" for prompt to combat inaccuracies with faces, specific features.
     Documentation @ FireHead90544/craiyon.py on Github
+
+    Return url of image in Blob storage afterwards.
+
     """
     def generate(self, prompt: str):
         retries = 5
         generator = Craiyon()  # Instantiate the API wrapper
+
+
         while retries > 0: #If 
             try:
                 result = generator.generate(prompt + "sketch")
-                print(result.description)  # Description about the generated images - Delete after testing
+                print(result.images)
                 first_image_url = result.images[0]  # Access, Save the first image URL (don't want too many images)
 
                 #Directly upload the image to the container, will make blob named after prompt
-                self.upload_to_blob(first_image_url, prompt)  
-
+                output_url = self.upload_to_blob(first_image_url, prompt)  
+                return output_url
 
                 break 
+            except ValueError as e: #includes JSONDecodeError
+                print(f"JSON decode error: {e}")
+                retries -= 1
+                time.sleep(5)  # Wait for 5 seconds before retrying
+
             except HTTPError as e:
-                if e.response.status_code == 405: #Recurrent API error during testing (sometimes occurs for unclear reason)
+                if e.response.status_code == 405:  # Specific API error handling
                     print(f"Retrying with 405 error: {e}...")
                     retries -= 1
                     time.sleep(5)  # Wait for 5 seconds before retrying
                 else:
+                    print(f"HTTP error occurred: {e}")
                     raise  # Re-raise other HTTP errors
+
+            except Exception as e:
+                print(f"Unexpected error: {e}")
+                raise  # Re-raise any other unexpected errors
         
         if retries == 0:
             print("Out of retries for generation -- check problem")
@@ -152,9 +173,11 @@ class CronScript:
         filter_trends = self.filter_trends(fetch_trends)
         print("Filtered Trends: ", filter_trends) 
         #NEXT UP: FURTHER FILTER BY WHICH IS LIKELY TO CONTINUE DEVELOPING BASED ON BIWEEKLY TIME SERIES DATA AND PROPHET
-
+        list_of_urls = []
         for trend in filter_trends:  
-            self.generate(trend)
+            output_url = self.generate(trend)
+            list_of_urls.append(output_url)
+        print(list_of_urls)
         
 
 

@@ -42,16 +42,14 @@ nltk.download('averaged_perceptron_tagger')
 
 
 #This is the JSON file containing a list of stories in each category -- see details here: https://www.kaggle.com/datasets/rmisra/news-category-dataset?resource=download
-df = pd.read_json("serverless/News_Category_Dataset_v3.json", lines=True)
+df = pd.read_json("./News_Category_Dataset_v3.json", lines=True)
 
-#Graph categories
+# Graph categories
 # df['category'].value_counts().plot( kind='bar', figsize=(15,10))
 # plt.show() #All categories are well-represented in the articles as expected
 
 # Used this snippets of code from 
 # https://github.com/ArmandDS/news_category/blob/master/News_Analysis_AO.ipynb
-
-
 
 #Cleans up news-stories by removing below stopwords, punctuation, and other filler characters.
 
