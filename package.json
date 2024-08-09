@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@shopify/hydrogen-react": "^2024.7.1",
+    "cors": "^2.8.5"
+  }
+}

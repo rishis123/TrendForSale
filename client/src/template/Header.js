@@ -58,16 +58,6 @@ function Header() {
                   className="dropdown-menu dropdown-menu-end"
                   aria-labelledby="userDropdown"
                 >
-                  <li>
-                    <Link to="/" className="dropdown-item" onClick={changeNav}>
-                      Login
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/" className="dropdown-item" onClick={changeNav}>
-                      Sign Up
-                    </Link>
-                  </li>
                 </ul>
               </li>
             </ul>

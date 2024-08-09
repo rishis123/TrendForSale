@@ -3,13 +3,34 @@ import FeatureProduct from "./FeatureProduct";
 import ScrollToTopOnMount from "../template/ScrollToTopOnMount";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+
+// Below function fetches metadata from backend server, which must be up and running. Dummy function.
 
 function Landing() {
+
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/metadata");
+        setData(response.data);
+      } catch (error) {
+        console.log(error);
+        console.log("Error");
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <>
       <ScrollToTopOnMount />
       <Banner />
       <div className="d-flex flex-column bg-white py-4">
+        <h1 className="text-center px-5"> Trend For Sale </h1>
         <p className="text-center px-5">
           Browse through my AI-generated shirts -- orders fulfilled by Shopify.
         </p>
@@ -18,6 +39,15 @@ function Landing() {
             Browse products
           </Link>
         </div>
+
+        <div>
+          {data ? (
+            <div>Data: {JSON.stringify(data)}</div>
+          ) : (
+            <div>Loading...</div>
+          )}
+        </div>
+
       </div>
       <h2 className="text-muted text-center mt-4 mb-3">New Arrivals</h2>
       <div className="container pb-5 px-lg-5">
