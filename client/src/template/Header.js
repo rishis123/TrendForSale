@@ -16,6 +16,12 @@ function Header() {
     }
   }
 
+  // function handleUserIconClick() {
+  //   if (isLoggedIn) {
+
+  //   }
+  // }
+
   return (
     <header>
       <nav className="navbar fixed-top navbar-expand-lg navbar-light bg-white border-bottom">
@@ -41,6 +47,8 @@ function Header() {
               <FontAwesomeIcon icon={["fas", "shopping-cart"]} />
               <span className="ms-3 badge rounded-pill bg-dark">0</span>
             </button>
+
+            {/* Controls code for User drop-down -- direct to sign-up/log-in */}
             <ul className="navbar-nav mb-2 mb-lg-0">
               <li className="nav-item dropdown">
                 <a
@@ -51,14 +59,10 @@ function Header() {
                   role="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
+                  onClick={handleUserIconClick} // Update the onClick handler
                 >
                   <FontAwesomeIcon icon={["fas", "user-alt"]} />
                 </a>
-                <ul
-                  className="dropdown-menu dropdown-menu-end"
-                  aria-labelledby="userDropdown"
-                >
-                </ul>
               </li>
             </ul>
           </div>

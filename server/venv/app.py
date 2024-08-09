@@ -1,19 +1,24 @@
 import json
+import os
 from flask import Flask, request
 # from db import db
 from flask_sqlalchemy import SQLAlchemy
 from random import choice
 from flask_cors import CORS #allow frontend to communicate
+from flask_session import Session #Store session data 
 
 # define db filename
-db_filename = "todo.db"
 app = Flask(__name__)
 CORS(app)
 
 # setup config
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_filename}"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
+
+app.secret_key = os.environ.get("SECRET_KEY") #securely store information
+
+Session(app)
 
 # initialize app
 # db.init_app(app)
