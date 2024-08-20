@@ -1,21 +1,31 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import (
-    UserMixin,
-    login_user,
-    LoginManager,
-    current_user,
-    logout_user,
-    login_required,
-)
+
 from sqlalchemy import func
 
 db = SQLAlchemy()
 
-class User(db.Model, UserMixin):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    full_name = db.Column(db.String(20), unique=True, nullable=False)
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
-    is_active = db.Column(db.Boolean(), default=True)
-    def __repr__(self):
-        return f'<User {self.username}>'
-    
+    #in_cart = 
+    #bought = 
+
+    def serialize(self):
+        data = {
+            "full_name" : self.full_name,
+            "username" : self.username,
+        }
+        return data
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True) 
+    product_name = db.Column(db.String(20), unique=True, nullable=False)
+    image_link = db.Column(db.String(50), unique=True, nullable=False)
+
+    def serialize(self):
+        data = {
+            "product_name" : self.product_name,
+        }
+        return data

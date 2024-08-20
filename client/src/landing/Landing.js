@@ -14,7 +14,8 @@ function Landing() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/metadata");
+        const url = process.env.REACT_APP_API_URL + "/metadata"
+        const response = await axios.get(url);
         setData(response.data);
       } catch (error) {
         console.log(error);
